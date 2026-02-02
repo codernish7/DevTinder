@@ -2,15 +2,24 @@ const express = require ('express')
 
 const app = express()
 
+const {userAuth,hrAuth}= require('./utils/middleware')
 
-app.use('/',(req,res)=>{
-    res.send('Hi from listening port 5000 home route')
+app.use('/user',userAuth)
+
+app.get('/user/admin',(req,res)=>{
+    res.send('admin 3')
 })
-app.use('/test',(req,res)=>{
-    res.send('Hi from test route')
+
+app.get('/user/adminDelete',(req,res)=>{
+    res.send('admin deleted')
 })
-app.use('/hello',(req,res)=>{
-    res.send('Hi from hello route')
+
+app.get('/user/adminRegister',(req,res)=>{
+    res.send('admin registered')
+})
+
+app.get('/hr/profile',hrAuth, (req, res)=>{
+    res.send('profile for hr1')
 })
 
 app.listen(5000,()=>{
