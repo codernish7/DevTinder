@@ -4,7 +4,65 @@ const app = express()
 
 const connectionDb = require('./configuration/connection')
 
-const {userAuth,hrAuth}= require('./utils/middleware')
+const User = require('./models/user')
+
+app.use(express.json())
+
+app.post('/signup',async(req,res)=>{
+    const profile = new User(req.body)
+    try {
+    await profile.save()
+    res.send('profile sign up successful')
+    } catch (error) {
+        res.status(400).send('sign up could not be completed')
+    }
+})
+
+app.get('/feed',async(req,res)=>{
+    try{
+      const feed = await User.find({})  
+      if(feed.length===0){
+        return res.status(400).send('no users found')
+      }
+      res.send(feed)
+    }
+    catch(error){
+        res.status(400).send('something went wrong')
+    }
+})
+
+app.get('/user',async(req,res)=>{
+    try {
+        const result = await User.find({age:req.body.Age})
+        if(result.length===0){
+            return res.status(400).send(`no users found with age ${req.body.Age}`)
+        }
+        res.send(result)
+    } catch (error) {
+        res.status(400).send('something went wrong')
+    }
+})
+
+app.delete('/user', async(req,res)=>{
+    try {
+        await User.findByIdAndDelete(req.body.id)
+        res.send('user deleted')
+    } catch (error) {
+        res.status(400).send('something went wrong')
+    }
+})
+
+app.patch('/user',async(req,res)=>{
+    const {id, ...update}= req.body
+    try {
+        const user = await User.findByIdAndUpdate(id,update,{returnDocument:'after'})
+        console.log('user after update--->', user)
+        res.send('name updated')
+    } catch (error) {
+        res.status(400).send('something went wrong')
+    }
+})
+
 
 connectionDb().then(()=>{
     console.log('connected to database')
@@ -15,21 +73,4 @@ connectionDb().then(()=>{
     console.log(err)
 })
 
-app.use('/user',userAuth)
-
-app.get('/user/admin',(req,res)=>{
-    res.send('admin 3')
-})
-
-app.get('/user/adminDelete',(req,res)=>{
-    res.send('admin deleted')
-})
-
-app.get('/user/adminRegister',(req,res)=>{
-    res.send('admin registered')
-})
-
-app.get('/hr/profile',hrAuth, (req, res)=>{
-    res.send('profile for hr1')
-})
 
