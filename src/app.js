@@ -9,9 +9,8 @@ const User = require("./models/user");
 app.use(express.json());
 
 app.post("/signup", async (req, res) => {
-  const profile = new User(req.body);
   try {
-    await profile.save();
+    await new User(req.body).save();
     res.send("profile sign up successful");
   } catch (error) {
     res.status(400).send(error.message);
@@ -51,14 +50,21 @@ app.delete("/user", async (req, res) => {
   }
 });
 
-app.patch("/user", async (req, res) => {
-  const { id, ...update } = req.body;
+app.patch("/user/:id", async (req, res) => {
+  const { ...update } = req.body;
+  const id = req.params?.id;
+
+  const allowedUpdates = ["gender", "skills", "photoUrl"];
+
+  const updateValid = Object.keys(update).every((items) =>
+    allowedUpdates.includes(items),
+  );
+
   try {
-    const user = await User.findByIdAndUpdate(id, update, {
-      returnDocument: "after",
-      runValidators: true,
-    });
-    console.log("user after update--->", user);
+    if (!updateValid) {
+      throw new Error("update not allowed");
+    }
+    await User.findByIdAndUpdate(id, update, { runValidators: true });
     res.send("user updated");
   } catch (error) {
     res.status(400).send(error.message);
