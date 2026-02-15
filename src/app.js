@@ -6,12 +6,35 @@ const connectionDb = require("./configuration/connection");
 
 const User = require("./models/user");
 
+const validateSignUp = require("./utils/validators");
+
+const bcrypt = require("bcrypt");
+
 app.use(express.json());
 
 app.post("/signup", async (req, res) => {
   try {
+    validateSignUp(req);
+    const { password } = req.body;
+    const passwordHash = await bcrypt.hash(password, 10);
+    req.body.password = passwordHash;
     await new User(req.body).save();
     res.send("profile sign up successful");
+  } catch (error) {
+    res.status(400).send(error.message);
+  }
+});
+
+app.post("/login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const userExists = await User.findOne({ email }).select("+password");
+    const verify = await bcrypt.compare(password, userExists.password)
+    if (userExists && verify) {
+      res.send("login successful");
+    } else {
+      res.status(400).send("invalid credentials");
+    }
   } catch (error) {
     res.status(400).send(error.message);
   }

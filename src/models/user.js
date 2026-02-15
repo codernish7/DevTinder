@@ -43,6 +43,17 @@ const userSchema = new Schema(
         message: `Enter valid email address`,
       },
     },
+    password:{
+      type:String,
+      required :true,
+      select : false,
+      validate : {
+        validator: function(value){
+          return validator.isStrongPassword(value)
+        },
+        message:`Enter a strong password`
+      }
+    },
     age: {
       type: Number,
       min: [18, `Minimum age must be 18`],
