@@ -36,23 +36,21 @@ const userSchema = new Schema(
       lowercase: true,
       validate: {
         validator: function (value) {
-          if (!validator.isEmail(value)) {
-            return false;
-          }
+          return validator.isEmail(value);
         },
         message: `Enter valid email address`,
       },
     },
-    password:{
-      type:String,
-      required :true,
-      select : false,
-      validate : {
-        validator: function(value){
-          return validator.isStrongPassword(value)
+    password: {
+      type: String,
+      required: true,
+      select: false,
+      validate: {
+        validator: function (value) {
+          return validator.isStrongPassword(value);
         },
-        message:`Enter a strong password`
-      }
+        message: `Enter a strong password`,
+      },
     },
     age: {
       type: Number,
@@ -64,9 +62,7 @@ const userSchema = new Schema(
       default: `https://img.freepik.com/free-vector/user-circles-set_78370-4704.jpg`,
       validate: {
         validator: function (url) {
-          if (!validator.isURL(url)) {
-            return false;
-          }
+          return validator.isURL(url);
         },
         message: `image url invalid`,
       },
