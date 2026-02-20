@@ -10,7 +10,14 @@ const validateSignUp = require("./utils/validators");
 
 const bcrypt = require("bcrypt");
 
+const jwt = require("jsonwebtoken");
+const cookieParser = require("cookie-parser");
+
+const userAuth = require("./utils/middleware");
+require("dotenv").config();
+
 app.use(express.json());
+app.use(cookieParser());
 
 app.post("/signup", async (req, res) => {
   try {
@@ -38,10 +45,29 @@ app.post("/login", async (req, res) => {
     if (!verify) {
       throw new Error("Invalid credentials");
     }
-
+    const token = await jwt.sign({ id: userExists._id }, process.env.SECRET_KEY);
+    res.cookie("userToken", token);
     res.send("Login successful");
   } catch (error) {
     res.status(401).send(error.message);
+  }
+});
+
+app.get("/profile", userAuth, async (req, res) => {
+  try {
+    const user = req.user;
+    res.send(user);
+  } catch (error) {
+    res.send(error.message);
+  }
+});
+
+app.post("/sendRequest", userAuth, async (req, res) => {
+  try {
+    const user = req.user;
+    res.send(user.firstName + " " + "sent a request");
+  } catch (error) {
+    res.send(error.message);
   }
 });
 
