@@ -1,5 +1,8 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
+const bcrypt = require("bcrypt");
+require("dotenv").config();
+const jwt = require("jsonwebtoken");
 
 const { Schema } = mongoose;
 
@@ -78,7 +81,34 @@ const userSchema = new Schema(
       },
     },
   },
-  { timestamps: true },
+  {
+    timestamps: true,
+    statics: {
+      hashPassword: async function (passwordInputbyUser) {
+        const hashedPassword = await bcrypt.hash(passwordInputbyUser, 10);
+        return hashedPassword;
+      },
+      decodeJWT: async function (userToken) {
+        const decodeToken = await jwt.verify(userToken, process.env.SECRET_KEY);
+        const { id } = decodeToken;
+        const user = await this.findById(id);
+        if (!user) {
+          throw new Error("user not found");
+        }
+        return user;
+      },
+    },
+    methods: {
+      validatePassword: async function (passwordInputbyUser) {
+        const verify = await bcrypt.compare(passwordInputbyUser, this.password);
+        return verify;
+      },
+      getJWT: async function () {
+        const token = await jwt.sign({ id: this._id }, process.env.SECRET_KEY);
+        return token;
+      },
+    },
+  },
 );
 
 const User = mongoose.model("User", userSchema);

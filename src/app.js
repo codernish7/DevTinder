@@ -8,9 +8,6 @@ const User = require("./models/user");
 
 const validateSignUp = require("./utils/validators");
 
-const bcrypt = require("bcrypt");
-
-const jwt = require("jsonwebtoken");
 const cookieParser = require("cookie-parser");
 
 const userAuth = require("./utils/middleware");
@@ -23,7 +20,7 @@ app.post("/signup", async (req, res) => {
   try {
     validateSignUp(req);
     const { password, ...rest } = req.body;
-    const passwordHash = await bcrypt.hash(password, 10);
+    const passwordHash = await User.hashPassword(password);
     await new User({ ...rest, password: passwordHash }).save();
     res.send("profile sign up successful");
   } catch (error) {
@@ -40,12 +37,12 @@ app.post("/login", async (req, res) => {
       throw new Error("Invalid credentials");
     }
 
-    const verify = await bcrypt.compare(password, userExists.password);
-
+    const verify = await userExists.validatePassword(password);
     if (!verify) {
       throw new Error("Invalid credentials");
     }
-    const token = await jwt.sign({ id: userExists._id }, process.env.SECRET_KEY);
+
+    const token = await userExists.getJWT();
     res.cookie("userToken", token);
     res.send("Login successful");
   } catch (error) {

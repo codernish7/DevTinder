@@ -1,4 +1,3 @@
-const jwt= require("jsonwebtoken")
 const User = require("../models/user")
 require("dotenv").config()
 
@@ -8,19 +7,11 @@ const userAuth=async(req,res,next)=>{
     if(!userToken){
       throw new Error("Invalid token")
     }
-    const decodeToken= await jwt.verify(userToken, process.env.SECRET_KEY )
-  
-    const {id}= decodeToken
-  
-    const user = await User.findById(id)
-  
-    if(!user){
-      throw new Error("user not found")
-    }
+    const user = await User.decodeJWT(userToken)
     req.user = user
     next()
   } catch (error) {
-    res.status(400).send(error.message)
+    res.status(401).send(error.message)
   }
 }
 
