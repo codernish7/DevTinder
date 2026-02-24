@@ -4,7 +4,10 @@ const validateSignUp = (req) => {
   const { firstName, gender, email, password, age } = req.body;
   if (!firstName || firstName.length < 3 || firstName.length > 50) {
     throw new Error("name must have atleast 3 characters");
-  } else if (!gender || !["male", "female", "others"].includes(gender.toLowerCase())) {
+  } else if (
+    !gender ||
+    !["male", "female", "others"].includes(gender.toLowerCase())
+  ) {
     throw new Error("enter a valid gender");
   } else if (!email || !validator.isEmail(email.toLowerCase())) {
     throw new Error("enter valid email");
