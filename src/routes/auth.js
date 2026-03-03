@@ -1,8 +1,11 @@
 const express = require("express");
 const validateSignUp = require("../utils/validators");
 const User = require("../models/user");
+const cookieParser = require("cookie-parser");
 
 const authRouter = express.Router();
+
+authRouter.use(cookieParser())
 
 authRouter.post("/signup", async (req, res) => {
   try {
@@ -37,5 +40,10 @@ authRouter.post("/login", async (req, res) => {
     res.status(401).send(error.message);
   }
 });
+
+authRouter.post("/logout",(req,res)=>{
+  
+  res.clearCookie("userToken").send('logout done')
+})
 
 module.exports = authRouter;
