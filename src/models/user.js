@@ -107,6 +107,10 @@ const userSchema = new Schema(
         const token = await jwt.sign({ id: this._id }, process.env.SECRET_KEY);
         return token;
       },
+      editUser: async function (updates){
+       Object.assign(this,updates)
+       return await this.save()
+      }
     },
   },
 );
