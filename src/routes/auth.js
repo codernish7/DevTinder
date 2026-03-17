@@ -1,5 +1,5 @@
 const express = require("express");
-const validateSignUp = require("../utils/validators");
+const {validateSignUp} = require("../utils/validators");
 const User = require("../models/user");
 const cookieParser = require("cookie-parser");
 
