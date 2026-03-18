@@ -3,6 +3,7 @@ const validator = require("validator");
 const bcrypt = require("bcrypt");
 require("dotenv").config();
 const jwt = require("jsonwebtoken");
+const { validateEdit } = require("../utils/validators");
 
 const { Schema } = mongoose;
 
@@ -107,9 +108,20 @@ const userSchema = new Schema(
         const token = await jwt.sign({ id: this._id }, process.env.SECRET_KEY);
         return token;
       },
-      editUser: async function (updates){
-       Object.assign(this,updates)
-       return await this.save()
+      editUser: async function (updates) {
+       const isValid= validateEdit(updates)
+        if (!isValid) {
+          throw new Error("Invalid field update")
+        }
+        if (Object.keys(updates).length === 0) {
+          throw new Error("No updates provided");
+        }
+        Object.keys(updates).forEach(key => {
+        if (updates[key] !== undefined) {
+        this[key] = updates[key];
+        }
+      });
+      return await this.save();
       }
     },
   },

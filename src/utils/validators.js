@@ -18,9 +18,9 @@ const validateSignUp = (req) => {
   }
 };
 
-const validateEdit = (req)=>{
+const validateEdit = (updates)=>{
   const allowedUpdates = ["gender", "age", "skills", "photoUrl"];
-  const isValid = Object.keys(req.body).every(field => allowedUpdates.includes(field));
+  const isValid = Object.keys(updates).every(field => allowedUpdates.includes(field));
   return isValid
 }
 
