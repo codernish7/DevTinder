@@ -109,20 +109,20 @@ const userSchema = new Schema(
         return token;
       },
       editUser: async function (updates) {
-       const isValid= validateEdit(updates)
+        const isValid = validateEdit(updates);
         if (!isValid) {
-          throw new Error("Invalid field update")
+          throw new Error("Invalid field update");
         }
         if (Object.keys(updates).length === 0) {
           throw new Error("No updates provided");
         }
-        Object.keys(updates).forEach(key => {
-        if (updates[key] !== undefined) {
-        this[key] = updates[key];
-        }
-      });
-      return await this.save();
-      }
+        Object.keys(updates).forEach((key) => {
+          if (updates[key] !== undefined) {
+            this[key] = updates[key];
+          }
+        });
+        return await this.save();
+      },
     },
   },
 );

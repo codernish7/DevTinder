@@ -18,10 +18,12 @@ const validateSignUp = (req) => {
   }
 };
 
-const validateEdit = (updates)=>{
+const validateEdit = (updates) => {
   const allowedUpdates = ["gender", "age", "skills", "photoUrl"];
-  const isValid = Object.keys(updates).every(field => allowedUpdates.includes(field));
-  return isValid
-}
+  const isValid = Object.keys(updates).every((field) =>
+    allowedUpdates.includes(field),
+  );
+  return isValid;
+};
 
-module.exports = {validateSignUp,validateEdit};
+module.exports = { validateSignUp, validateEdit };

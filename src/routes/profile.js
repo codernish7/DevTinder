@@ -1,6 +1,6 @@
 const express = require("express");
 const userAuth = require("../utils/middleware");
-const {validateEdit} = require("../utils/validators")
+const { validateEdit } = require("../utils/validators");
 
 const profileRouter = express.Router();
 
