@@ -34,7 +34,7 @@ requestRouter.post(
       });
 
       if (existingRequest) {
-        return res.send("connection request exists");
+        return res.status(400).send("connection request exists");
       }
 
       const data = await new ConnectionRequestModel({
