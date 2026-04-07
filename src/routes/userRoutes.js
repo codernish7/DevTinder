@@ -3,6 +3,8 @@ const userAuth = require("../utils/middleware");
 const ConnectionRequestModel = require("../models/connectionRequest");
 const userRouter = express.Router();
 
+const USER_INFO = "firstName lastName age gender skills photoUrl";
+
 userRouter.get("/user/requests/received", userAuth, async (req, res) => {
   try {
     const loggedInUser = req.user;
@@ -10,13 +12,38 @@ userRouter.get("/user/requests/received", userAuth, async (req, res) => {
     const pendingRequests = await ConnectionRequestModel.find({
       toUserId: loggedInUser._id,
       status: "interested",
-    }).populate("fromUserId", "firstName gender age skills photoUrl");
+    }).populate("fromUserId", USER_INFO);
 
-    if(!pendingRequests.length){
-       return res.json({ message: "No pending requests", data: [] });
+    if (!pendingRequests.length) {
+      return res.json({ message: "No pending requests", data: [] });
     }
 
     res.json({ message: "Pending requests", data: pendingRequests });
+  } catch (error) {
+    res.status(400).send(error.message);
+  }
+});
+
+userRouter.get("/user/connections", userAuth, async (req, res) => {
+  try {
+    const loggedInUser = req.user;
+
+    const acceptedConnections = await ConnectionRequestModel.find({
+      $or: [
+        { fromUserId: loggedInUser._id, status: "accepted" },
+        { toUserId: loggedInUser._id, status: "accepted" },
+      ],
+    })
+      .populate("fromUserId", USER_INFO)
+      .populate("toUserId", USER_INFO);
+
+    const data = acceptedConnections.map((items) => {
+      if (loggedInUser._id.toString() === items.fromUserId._id.toString()) {
+        return items.toUserId;
+      }
+      return items.fromUserId;
+    });
+    res.json({ message: "Connections of " + loggedInUser.firstName, data });
   } catch (error) {
     res.status(400).send(error.message);
   }

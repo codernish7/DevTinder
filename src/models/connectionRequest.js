@@ -12,6 +12,7 @@ const connectionRequestSchema = new Schema(
     toUserId: {
       type: Schema.Types.ObjectId,
       required: true,
+      ref: "User",
     },
     status: {
       type: String,
@@ -30,6 +31,8 @@ const connectionRequestSchema = new Schema(
 connectionRequestSchema.index({ fromUserId: 1, toUserId: 1 }, { unique: true });
 
 connectionRequestSchema.index({ toUserId: 1, status: 1 });
+
+connectionRequestSchema.index({ fromUserId: 1, status: 1 });
 
 connectionRequestSchema.pre("save", async function () {
   if (this.fromUserId.equals(this.toUserId)) {
