@@ -71,6 +71,12 @@ const userSchema = new Schema(
         message: `image url invalid`,
       },
     },
+    about: {
+      type: String,
+      trim: true,
+      maxlength: 500,
+      default: "",
+    },
     skills: {
       type: [String],
       validate: {

@@ -19,7 +19,7 @@ const validateSignUp = (req) => {
 };
 
 const validateEdit = (updates) => {
-  const allowedUpdates = ["gender", "age", "skills", "photoUrl"];
+  const allowedUpdates = ["gender", "age", "skills", "photoUrl", "about"];
   const isValid = Object.keys(updates).every((field) =>
     allowedUpdates.includes(field),
   );
